@@ -1,11 +1,15 @@
-from fastapi import FastAPI
+from http.client import HTTPException
 
+from fastapi import FastAPI, status
+from fastapi.responses import JSONResponse
+from enum import Enum
 import uuid
 
 app = FastAPI(
     title="APIs en clase de Mlops 5",
     version="0.0.1"
 )
+
 
 @app.post("/api/v1/users/")
 async def create_user(username: str, mail: str, password: str):
@@ -18,21 +22,52 @@ async def create_user(username: str, mail: str, password: str):
     }
 
 
+@app.get("/api/v1/{user_id}")
+async def get_user(user_id: str):
+    users = {
+        "Iden1": {
+            "username": "nick1",
+            "name": "Juan"
+
+        },
+        "Iden2": {
+            "username": "nick2",
+            "name": "Felipe"
+        }
+    }
+
+    if user_id in users:
+        user = users[user_id]
+        return user
+    else:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
 
 
+class TaskStatus(str, Enum):
+    pendiente = "pendiente"
+    en_progreso = "en progreso"
+    completada = "completada"
 
 
+@app.post("/api/v1/tasks/create")
+async def create_task(task: str, description: str, message: str):
+    return {
+        "name_task": task,
+        "status": TaskStatus,
+        "description": description,
+        "message": "Tarea creada",
+        "status_code": 201
+
+    }
 
 
+@app.get("/tasks/{user_id}")
+async def get_task_by_user(user_id: str):
+    """
 
+    :type user_id: 
+    """
+    if user_id not in create_task:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+    return create_task[user_id]
 
-
-
-
-
-
-
-
-
-
-#%%
